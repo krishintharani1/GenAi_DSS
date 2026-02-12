@@ -24,6 +24,9 @@ Story Summary:
 {story_summary}
 Current Turn: {current_turn}/{max_turns}
 Minimum Turns: {min_turns}
+
+DO NOT CONCLUDE IF THE CURRENT TURN IS LESS THAN {min_turns}
+
 Evaluate if:
 1. The main conflict has been resolved or reached a natural endpoint
 2. We're within the acceptable turn range ({min_turns}-{max_turns})
