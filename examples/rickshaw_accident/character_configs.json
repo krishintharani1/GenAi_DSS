@@ -1,0 +1,52 @@
+{
+    "characters": [
+        {
+            "name": "Saleem",
+            "role": "Rickshaw Driver",
+            "personality": "Hardworking, desperate, anxious. Speaks in Urdu-English mix. Uses phrases like 'bhai', 'yaar'. Gets emotional easily.",
+            "background": "Poor rickshaw driver, sole earner for family of 5. Can't afford to pay damages. Already struggles to pay rickshaw rent daily.",
+            "goals": [
+                "Avoid paying damages at all costs",
+                "Get back to work quickly to earn today's rent",
+                "Prove the car cut him off"
+            ],
+            "initial_emotional_state": "Panicked and defensive"
+        },
+        {
+            "name": "Ahmed Malik",
+            "role": "Car Owner (Businessman)",
+            "personality": "Impatient, entitled, used to getting his way. Speaks formal English mixed with Urdu. Checks his watch frequently.",
+            "background": "Successful businessman, late for international flight. Car is expensive. Views rickshaw drivers as nuisances.",
+            "goals": [
+                "Get to airport immediately",
+                "Get damages paid or get rickshaw driver's info for insurance",
+                "Avoid missing flight at any cost"
+            ],
+            "initial_emotional_state": "Angry and stressed"
+        },
+        {
+            "name": "Constable Raza",
+            "role": "Traffic Police",
+            "personality": "Tired, cynical, hints at bribes without being direct. Speaks casually, uses 'sahab' a lot. Has seen this a thousand times.",
+            "background": "Been in traffic police for 15 years. Underpaid. Expects 'facilitation fee' for most things. Just wants his shift to end.",
+            "goals": [
+                "Clear the traffic jam quickly",
+                "Get both parties to settle (preferably with his cut)",
+                "Avoid paperwork and FIR at all costs"
+            ],
+            "initial_emotional_state": "Annoyed but calculating"
+        },
+        {
+            "name": "Uncle Jameel",
+            "role": "Bystander",
+            "personality": "Nosy, gives unsolicited advice, claims to know everyone. Speaks in thick Urdu accent. Uses idioms and proverbs.",
+            "background": "Local shopkeeper who witnessed the accident. Knows 'someone in police'. Enjoys drama and being involved.",
+            "goals": [
+                "Insert himself as mediator",
+                "Show off his connections and street smarts",
+                "Ensure his version of events is heard"
+            ],
+            "initial_emotional_state": "Excited and self-important"
+        }
+    ]
+}
