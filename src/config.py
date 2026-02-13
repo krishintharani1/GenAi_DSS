@@ -15,7 +15,6 @@ class StoryConfig:
     max_tokens_per_prompt: int = 2000
     max_context_length: int = 4000
     
-    turns_between_director_intervention: int = 5
     max_consecutive_same_character: int = 2
     
     num_characters: int = 4
