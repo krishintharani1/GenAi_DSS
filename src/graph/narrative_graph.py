@@ -46,7 +46,13 @@ class NarrativeGraph:
     async def _director_select_node(self, state: StoryState) -> Dict:
         """Director selects the next speaker."""
         available = list(self.characters.keys())
-        next_speaker, narration = await self.director.select_next_speaker(state, available)
+        
+        # ===== Collect previous narrations for anti-repetition =====
+        previous_narrations = state.story_narration[-5:] if state.story_narration else []
+        
+        next_speaker, narration = await self.director.select_next_speaker(
+            state, available, previous_narrations
+        )
 
         print("=" * 60)
         print(f"DIRECTOR NARRATION: {narration}")
@@ -81,7 +87,6 @@ class NarrativeGraph:
             
         character = self.characters[next_speaker]
         
-        # Build context using updated method
         # Taking last 10 turns
         recent_turns = state.dialogue_history[-10:]
         history_text = "\n".join([
@@ -96,19 +101,60 @@ class NarrativeGraph:
             for action in recent_actions
         ])
         
-        char_memory = state.character_profiles[next_speaker].memory
+        # ===== Collect this character's own previous lines for anti-repetition =====
+        own_previous_lines = []
+        for turn in state.dialogue_history:
+            if turn.speaker == next_speaker:
+                own_previous_lines.append(f"[DIALOGUE] {turn.dialogue}")
+        for action in state.action_history:
+            if action.actor == next_speaker:
+                own_previous_lines.append(f"[ACTION: {action.action_type.upper()}] {action.description}")
+        
+        own_previous_lines = own_previous_lines[-5:]
+        own_lines_text = "\n".join(own_previous_lines) if own_previous_lines else "None (this is your first turn)"
+        
+        char_profile = state.character_profiles[next_speaker]
+        char_memory = char_profile.memory
+        
+        # Calculate if we need to nudge the character to perform actions
+        action_count = len(state.action_history)
+        remaining_turns = self.config.max_turns - state.current_turn
+        actions_needed = self.config.min_actions - action_count
+        
+        action_nudge = ""
+        if actions_needed > 0 and remaining_turns <= actions_needed + 3:
+            action_nudge = f"""
+URGENT REQUIREMENT: At least {actions_needed} more non-verbal actions are needed
+(such as GIVE, LEAVE, CALL, THREATEN, SEARCH, TAKE, SHOW, GESTURE, MOVE).
+Only {remaining_turns} turns remain. You MUST perform a non-verbal action this turn instead of just talking.
+Pick an action that makes sense for you and the current situation.
+You have these items you could use: {', '.join(char_memory.inventory) if char_memory.inventory else 'nothing notable'}
+"""
+        
+        # Build detailed inventory list
+        inventory_text = "None"
+        if char_memory.inventory:
+            inventory_items = "\n".join([f"  - {item}" for item in char_memory.inventory])
+            inventory_text = f"\n{inventory_items}"
+        
+        # Build important facts (includes seeded secret)
+        facts_text = "None"
+        if char_memory.important_facts:
+            facts_text = "; ".join(char_memory.important_facts[-5:])
         
         context = f"""
 Initial Event: {state.seed_story.get('description', 'Unknown event')}
-
+{action_nudge}
 World State:
 Location: {state.world_state.get('location', 'Unknown')}
 Characters Present: {', '.join(state.world_state.get('characters_present', []))}
 
 Your Memory:
-Inventory: {', '.join(char_memory.inventory) if char_memory.inventory else 'None'}
+Inventory (items you physically have on you right now): {inventory_text}
 Goals: {', '.join(char_memory.goals) if char_memory.goals else 'None'}
-Recent Observations: {'; '.join(char_memory.observations[-3:]) if char_memory.observations else 'None'}
+Important Facts You Know: {facts_text}
+Recent Observations: {'; '.join(char_memory.observations[-5:]) if char_memory.observations else 'None'}
+Perceptions of Others: {'; '.join([f'{k}: {v}' for k, v in char_memory.perceptions.items()]) if char_memory.perceptions else 'None yet'}
 
 Director Narration: {state.story_narration[-1] if state.story_narration else 'None'}
 
@@ -117,6 +163,9 @@ Recent Actions:
 
 Recent Dialogue:
 {history_text if history_text else 'No dialogue yet'}
+
+Your Previous Lines (DO NOT repeat any gestures, phrases, or mannerisms from these):
+{own_lines_text}
 """
         
         response, action_dict = await character.respond(state, context)
@@ -198,31 +247,56 @@ Recent Dialogue:
     
     async def _check_conclusion_node(self, state: StoryState) -> Dict:
         """Check if story should end."""
-        should_end, reason = await self.director.check_conclusion(state)
-        
-        # Also check if we have minimum actions
         action_count = len(state.action_history)
-        
-        if should_end:
-            # Warn if we don't have enough actions
+
+        if state.current_turn < self.config.min_turns:
+            return {"is_concluded": False}
+
+        if state.current_turn >= self.config.max_turns:
+            print(f"\n[HARD STOP] Reached max turns ({self.config.max_turns}). Requesting Director conclusion.")
             if action_count < self.config.min_actions:
-                print(f"\n!!! WARNING: Story ending with only {action_count} actions (minimum {self.config.min_actions} required) !!!\n")
+                print(f"  WARNING: Only {action_count}/{self.config.min_actions} actions were performed.")
             
-            # Create event log for conclusion
+            _, forced_conclusion = await self.director.force_conclude(state)
+            
+            events_update = []
+            if forced_conclusion:
+                events_update.append({
+                    "type": "narration",
+                    "content": forced_conclusion,
+                    "turn": state.current_turn,
+                    "metadata": {"conclusion": True}
+                })
+            
+            return {
+                "is_concluded": True,
+                "conclusion_reason": forced_conclusion or "Story reached its natural end.",
+                "events": state.events + events_update
+            }
+
+        should_end, reason = await self.director.check_conclusion(state)
+
+        if should_end:
+            if action_count < self.config.min_actions:
+                remaining = self.config.max_turns - state.current_turn
+                print(f"  [Blocking conclusion: only {action_count}/{self.config.min_actions} actions. {remaining} turns remaining.]")
+                return {"is_concluded": False}
+
             events_update = []
             if reason:
-                 events_update.append({
-                     "type": "narration",
-                     "content": reason,
-                     "turn": state.current_turn,
-                     "metadata": {"conclusion": True}
-                 })
-                 
+                events_update.append({
+                    "type": "narration",
+                    "content": reason,
+                    "turn": state.current_turn,
+                    "metadata": {"conclusion": True}
+                })
+
             return {
-                "is_concluded": True, 
+                "is_concluded": True,
                 "conclusion_reason": str(reason),
                 "events": state.events + events_update
             }
+
         return {"is_concluded": False}
     
     async def _conclude_node(self, state: StoryState) -> Dict:
