@@ -232,8 +232,14 @@ Key parameters in `src/config.py`:
 {
     "name": "Saleem",
     "description": "Poor rickshaw driver, sole earner for family of 5...",
-    "initial_inventory": ["rickshaw", "driver's license", "500 rupees"],
-    "initial_goals": ["avoid paying damages", "keep license", "get home to family"]
+    "inventory": [
+                "Worn leather wallet with Rs. 500",
+                "Expired rickshaw license (3 months overdue)",
+                "Prayer beads",
+                "Photo of wife and children",
+                "Half-empty water bottle"
+            ],
+    "secret": "Has been driving without valid insurance for 6 months because he couldn't afford renewal. The money saved went to his daughter's school fees."
 }
 ```
 
