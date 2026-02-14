@@ -13,4 +13,4 @@ dependencies = [
 ]
 
 [tool.uv]
-python-version = "3.11"
+
