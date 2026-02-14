@@ -46,9 +46,15 @@ async def main():
     # Build and run narrative graph
     story_graph = NarrativeGraph(config, characters, director)
     
-    print("Starting Narrative Game...")
+    print("=" * 70)
+    print("STARTING MULTI-AGENT NARRATIVE SYSTEM")
+    print("=" * 70)
     print(f"Title: {seed_story['title']}")
-    print(f"Scenario: {seed_story['description']}\n")
+    print(f"Scenario: {seed_story['description']}")
+    print(f"Characters: {', '.join([c['name'] for c in char_configs['characters']])}")
+    print(f"Max Turns: {config.max_turns}")
+    print(f"Required Actions: 5 minimum")
+    print("=" * 70 + "\n")
     
     # Run the game with the prepared character states
     final_state = await story_graph.run(
@@ -57,18 +63,32 @@ async def main():
     )
     
     # Print results
-    print("\n=== STORY TRANSCRIPT ===\n")
-    for turn in final_state["dialogue_history"]:
-        if isinstance(turn, dict):
-             print(f"[Turn {turn.get('turn_number')}] {turn.get('speaker')}:")
-             print(f"  {turn.get('dialogue')}\n")
-        else:
-             print(f"[Turn {turn.turn_number}] {turn.speaker}:")
-             print(f"  {turn.dialogue}\n")
+    print("\n" + "=" * 70)
+    print("STORY TRANSCRIPT")
+    print("=" * 70 + "\n")
     
-    print(f"\n=== CONCLUSION ===")
-    print(f"Ended after {final_state['current_turn']} turns")
-    print(f"Reason: {final_state.get('conclusion_reason')}")
+    for event in final_state["events"]:
+        event_type = event.get("type")
+        turn = event.get("turn")
+        
+        if event_type == "narration":
+            print(f"[Turn {turn}] NARRATION:")
+            print(f"  {event.get('content')}\n")
+        elif event_type == "dialogue":
+            print(f"[Turn {turn}] {event.get('speaker')}:")
+            print(f"  {event.get('content')}\n")
+        elif event_type == "action":
+            print(f"[Turn {turn}] ACTION by {event.get('actor')}:")
+            print(f"  Type: {event.get('action_type').upper()}")
+            print(f"  {event.get('content')}\n")
+    
+    print("=" * 70)
+    print("STORY CONCLUSION")
+    print("=" * 70)
+    print(f"Total Turns: {final_state['current_turn']}/{config.max_turns}")
+    print(f"Total Actions: {len(final_state.get('action_history', []))}")
+    print(f"Conclusion: {final_state.get('conclusion_reason')}")
+    print("=" * 70 + "\n")
 
     # Save to JSON
     output_path = project_root / "story_output.json"
@@ -78,12 +98,14 @@ async def main():
         "events": final_state.get("events", []),
         "metadata": {
             "total_turns": final_state["current_turn"],
-            "conclusion_reason": final_state.get("conclusion_reason")
+            "total_actions": len(final_state.get("action_history", [])),
+            "conclusion_reason": final_state.get("conclusion_reason"),
+            "characters": [c["name"] for c in char_configs["characters"]]
         }
     }
     
     output_path.write_text(json.dumps(output_data, indent=2, default=str))
-    print(f"\nStory saved to {output_path}")
+    print(f"Story saved to {output_path}")
 
     # Save prompts
     all_logs = []

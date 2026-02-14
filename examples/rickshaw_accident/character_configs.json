@@ -2,19 +2,27 @@
     "characters": [
         {
             "name": "Saleem",
-            "description": "Poor rickshaw driver, sole earner for family of 5. Speaks Urdu-English mix, uses 'bhai' and 'yaar'. Panicked and defensive after minor accident with expensive car."
+            "description": "Poor rickshaw driver, sole earner for family of 5. Speaks Urdu-English mix, uses 'bhai' and 'yaar'. Panicked and defensive after minor accident with expensive car.",
+            "initial_inventory": ["rickshaw", "driver's license", "500 rupees"],
+            "initial_goals": ["avoid paying damages", "keep license", "get home to family"]
         },
         {
             "name": "Ahmed Malik",
-            "description": "Successful businessman late for international flight. Impatient, entitled. Speaking formally but stressed about missing flight and damage to his car."
+            "description": "Successful businessman late for international flight. Impatient, entitled. Speaking formally but stressed about missing flight and damage to his car.",
+            "initial_inventory": ["luxury car", "wallet with 50000 rupees", "flight ticket", "phone"],
+            "initial_goals": ["catch flight", "get compensation for car damage", "resolve quickly"]
         },
         {
             "name": "Constable Raza",
-            "description": "15-year traffic police veteran, underpaid and cynical. Just wants to clear traffic and maybe get a 'facilitation fee'. Sees this as everyday nuisance."
+            "description": "15-year traffic police veteran, underpaid and cynical. Just wants to clear traffic and maybe get a 'facilitation fee'. Sees this as everyday nuisance.",
+            "initial_inventory": ["police uniform", "ticket book", "radio"],
+            "initial_goals": ["clear traffic", "collect facilitation fee", "finish shift"]
         },
         {
             "name": "Uncle Jameel",
-            "description": "Local shopkeeper who witnessed everything. Nosy, loves drama, gives unsolicited advice in thick Urdu accent. Claims to know 'someone in police'."
+            "description": "Local shopkeeper who witnessed everything. Nosy, loves drama, gives unsolicited advice in thick Urdu accent. Claims to know 'someone in police'.",
+            "initial_inventory": ["shop keys", "phone"],
+            "initial_goals": ["share witness account", "be helpful", "make connections"]
         }
     ]
 }

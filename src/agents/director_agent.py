@@ -20,14 +20,23 @@ class DirectorAgent(BaseAgent):
         else:
             recent_dialogue = "No dialogue yet. The story is just starting. Select the character most likely to speak first based on the Context."
         
+        # Format recent actions
+        if story_state.action_history:
+            recent_actions = "\n".join(
+                f"[ACTION] {action.actor}: {action.description}"
+                for action in story_state.action_history[-3:]
+            )
+        else:
+            recent_actions = "No actions performed yet."
+        
         prompt = DIRECTOR_SELECT_SPEAKER_PROMPT.format(
             description=story_state.seed_story.get('description', ''),
             recent_dialogue=recent_dialogue,
+            recent_actions=recent_actions,
             available_characters=", ".join(available_characters),
             max_consecutive=self.config.max_consecutive_same_character
         )
         
-        # print(f"DEBUG: Director Prompt:\n{prompt}\n")
         response = await self.generate_response(prompt)
         
         try:
@@ -47,8 +56,11 @@ class DirectorAgent(BaseAgent):
 
     async def check_conclusion(self, story_state: StoryState) -> Tuple[bool, Optional[str]]:
         """Check if the story should end."""
+        action_count = len(story_state.action_history)
+        
         prompt = DIRECTOR_CONCLUSION_PROMPT.format(
             story_summary=f"Context: {story_state.seed_story.get('description', '')}\nLast Turns:\n" + "\n".join([f"{t.speaker}: {t.dialogue}" for t in story_state.dialogue_history[-5:]]),
+            action_count=action_count,
             current_turn=story_state.current_turn,
             max_turns=self.config.max_turns,
             min_turns=self.config.min_turns
@@ -59,7 +71,14 @@ class DirectorAgent(BaseAgent):
         try:
             cleaned_response = self._clean_json_response(response)
             data = json.loads(cleaned_response)
-            return data.get("should_end", False), data.get("conclusion_narration")
+            should_end = data.get("should_end", False)
+            
+            # Override: Don't end if we don't have enough actions yet
+            if should_end and action_count < 5 and story_state.current_turn < self.config.max_turns:
+                print(f"  [Director wanted to end, but only {action_count}/5 actions performed. Continuing...]")
+                return False, None
+                
+            return should_end, data.get("conclusion_narration")
         except Exception as e:
             print(f"Error parsing director conclusion: {e}")
             return False, None
