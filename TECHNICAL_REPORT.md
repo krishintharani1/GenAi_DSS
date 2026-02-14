@@ -14,7 +14,7 @@ The system ensures compliance with all constraints including 25-turn limit and m
 
 ### 1.1 Overview
 
-The system is built using LangGraph as the orchestration framework, with Google Gemini (gemma-3-27b-it) as the language model. The architecture follows a modular design with clear separation of concerns:
+The system is built using LangGraph as the orchestration framework, with Google Gemini ("gemma-3-27b-it") as the language model. The architecture follows a modular design with clear separation of concerns:
 
 ```
 ┌─────────────────────────────────────────────────────────┐

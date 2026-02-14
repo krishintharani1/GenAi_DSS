@@ -145,7 +145,7 @@ max_turns = 25           # Maximum dialogue turns
 min_turns = 10           # Minimum before conclusion
 min_actions = 5          # Minimum actions required
 temperature = 0.7        # LLM creativity (adjustable)
-model_name = "gemma-3-27b-it"  # Google Gemini model
+model_name = ""gemma-3-27b-it""  
 ```
 
 ---

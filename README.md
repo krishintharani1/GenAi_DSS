@@ -213,7 +213,7 @@ Key parameters in `src/config.py`:
 - `max_tokens_per_prompt`: 2000 (Max tokens per LLM generation)
 - `max_context_length`: 4000 (Max context window)
 - `temperature`: 0.7 (Adjustable for creativity vs. consistency)
-- `model_name`: "gemma-3-27b-it" (Google Gemini model)
+- `model_name`: ""gemma-3-27b-it"" (Google Gemini model)
 
 ## 8. Key Features Implemented
 
