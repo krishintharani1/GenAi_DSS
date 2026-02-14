@@ -54,6 +54,7 @@ class CharacterAgent(BaseAgent):
                         "effects": self._determine_action_effects(
                             action_type, 
                             response_data.get("action_target"),
+                            response_text,
                             story_state
                         )
                     }
@@ -72,10 +73,11 @@ class CharacterAgent(BaseAgent):
             return "...", None
     
     def _determine_action_effects(self, action_type: str, target: Optional[str], 
-                                  story_state: StoryState) -> Dict:
+                                  description: str, story_state: StoryState) -> Dict:
         """Determine the effects of an action on the story state."""
         effects = {}
         action_type = action_type.upper()
+        char_memory = story_state.character_profiles[self.name].memory
         
         if action_type == "LEAVE":
             # Character leaves the scene
@@ -89,13 +91,63 @@ class CharacterAgent(BaseAgent):
             effects[f"{self.name}_on_call"] = True
             
         elif action_type == "GIVE" and target:
-            # Transfer item from inventory
-            char_memory = story_state.character_profiles[self.name].memory
-            if char_memory.inventory:
-                # Assume giving first relevant item
+            # Try to find the relevant item from inventory based on the action description
+            given_item = self._find_relevant_item(char_memory.inventory, description)
+            if given_item:
+                # Remove from giver's inventory
+                char_memory.inventory = [i for i in char_memory.inventory if i != given_item]
+                # Add to target's inventory if they exist
+                if target in story_state.character_profiles:
+                    target_memory = story_state.character_profiles[target].memory
+                    target_memory.inventory.append(given_item)
+                    target_memory.observations.append(f"{self.name} gave me: {given_item}")
+                effects[f"item_transferred_{self.name}_to_{target}"] = given_item
+            else:
                 effects[f"item_given_to_{target}"] = True
+            
+        elif action_type == "SHOW" and target:
+            # Character shows an item — doesn't transfer it, but target now knows about it
+            shown_item = self._find_relevant_item(char_memory.inventory, description)
+            if shown_item and target in story_state.character_profiles:
+                target_memory = story_state.character_profiles[target].memory
+                target_memory.observations.append(f"{self.name} showed me: {shown_item}")
+            effects[f"item_shown_by_{self.name}"] = shown_item or description
                 
         elif action_type == "THREATEN":
             effects["tension_level"] = "high"
             
+        elif action_type == "TAKE" and target:
+            effects[f"{self.name}_took_from_{target}"] = True
+            
+        elif action_type == "SEARCH":
+            effects[f"{self.name}_searching"] = True
+            
+        elif action_type == "MOVE":
+            effects[f"{self.name}_moved"] = True
+            
+        elif action_type == "GESTURE":
+            effects[f"{self.name}_gestured"] = True
+            
         return effects
+    
+    def _find_relevant_item(self, inventory: List[str], description: str) -> Optional[str]:
+        """Find the most relevant inventory item based on an action description."""
+        if not inventory:
+            return None
+        
+        description_lower = description.lower()
+        
+        # Try to match inventory items to the action description
+        best_match = None
+        best_score = 0
+        
+        for item in inventory:
+            item_lower = item.lower()
+            # Check if any significant words from the item appear in the description
+            item_words = [w for w in item_lower.split() if len(w) > 3]
+            matches = sum(1 for w in item_words if w in description_lower)
+            if matches > best_score:
+                best_score = matches
+                best_match = item
+        
+        return best_match
