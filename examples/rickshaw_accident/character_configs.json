@@ -3,26 +3,50 @@
         {
             "name": "Saleem",
             "description": "Poor rickshaw driver, sole earner for family of 5. Speaks Urdu-English mix, uses 'bhai' and 'yaar'. Panicked and defensive after minor accident with expensive car.",
-            "initial_inventory": ["rickshaw", "driver's license", "500 rupees"],
-            "initial_goals": ["avoid paying damages", "keep license", "get home to family"]
+            "inventory": [
+                "Worn leather wallet with Rs. 500",
+                "Expired rickshaw license (3 months overdue)",
+                "Prayer beads",
+                "Photo of wife and children",
+                "Half-empty water bottle"
+            ],
+            "secret": "Has been driving without valid insurance for 6 months because he couldn't afford renewal. The money saved went to his daughter's school fees."
         },
         {
             "name": "Ahmed Malik",
-            "description": "Successful businessman late for international flight. Impatient, entitled. Speaking formally but stressed about missing flight and damage to his car.",
-            "initial_inventory": ["luxury car", "wallet with 50000 rupees", "flight ticket", "phone"],
-            "initial_goals": ["catch flight", "get compensation for car damage", "resolve quickly"]
+            "description": "Successful businessman late for international flight for a business trip. Impatient, entitled. Speaking formally but stressed about missing flight and damage to his car.",
+            "inventory": [
+                "iPhone 15 Pro",
+                "Rolex watch",
+                "Business class ticket to Dubai",
+                "Designer leather briefcase",
+                "Rs. 50,000 in wallet"
+            ],
+            "secret": "The 'business trip' is actually him fleeing the country - his textile company is under investigation for tax fraud. Missing this flight could mean arrest."
         },
         {
             "name": "Constable Raza",
             "description": "15-year traffic police veteran, underpaid and cynical. Just wants to clear traffic and maybe get a 'facilitation fee'. Sees this as everyday nuisance.",
-            "initial_inventory": ["police uniform", "ticket book", "radio"],
-            "initial_goals": ["clear traffic", "collect facilitation fee", "finish shift"]
+            "inventory": [
+                "Traffic violation booklet",
+                "Whistle on chain",
+                "Baton",
+                "Unofficial 'collection' of Rs. 2,000 from today's shift",
+                "Pack of cheap cigarettes"
+            ],
+            "secret": "His daughter's wedding is next month and he's Rs. 100,000 short. He's hoping this accident involves someone wealthy enough to pay a hefty 'settlement fee'."
         },
         {
             "name": "Uncle Jameel",
             "description": "Local shopkeeper who witnessed everything. Nosy, loves drama, gives unsolicited advice in thick Urdu accent. Claims to know 'someone in police'.",
-            "initial_inventory": ["shop keys", "phone"],
-            "initial_goals": ["share witness account", "be helpful", "make connections"]
+            "inventory": [
+                "Nokia phone with cracked screen",
+                "Shop keys on large keyring",
+                "Reading glasses on chain",
+                "Notebook with 'debts owed' list",
+                "Paan-stained handkerchief"
+            ],
+            "secret": "Actually owes Saleem Rs. 3,000 for rickshaw rides on credit. Sees this as opportunity to appear helpful and avoid paying his debt by 'witnessing' in Saleem's favor."
         }
     ]
 }
