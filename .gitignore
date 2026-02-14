@@ -138,3 +138,6 @@ visualize_graph.py
 # Visualization scripts
 visualize_graph.py
 
+# Test scripts
+test_syntax.py
+verification_checklist.md
