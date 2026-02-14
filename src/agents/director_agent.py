@@ -63,7 +63,8 @@ class DirectorAgent(BaseAgent):
             action_count=action_count,
             current_turn=story_state.current_turn,
             max_turns=self.config.max_turns,
-            min_turns=self.config.min_turns
+            min_turns=self.config.min_turns,
+            min_actions=self.config.min_actions
         )
         
         response = await self.generate_response(prompt)
@@ -74,8 +75,8 @@ class DirectorAgent(BaseAgent):
             should_end = data.get("should_end", False)
             
             # Override: Don't end if we don't have enough actions yet
-            if should_end and action_count < 5 and story_state.current_turn < self.config.max_turns:
-                print(f"  [Director wanted to end, but only {action_count}/5 actions performed. Continuing...]")
+            if should_end and action_count < self.config.min_actions and story_state.current_turn < self.config.max_turns:
+                print(f"  [Director wanted to end, but only {action_count}/{self.config.min_actions} actions performed. Continuing...]")
                 return False, None
                 
             return should_end, data.get("conclusion_narration")

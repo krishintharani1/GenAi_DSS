@@ -202,12 +202,11 @@ Recent Dialogue:
         
         # Also check if we have minimum actions
         action_count = len(state.action_history)
-        min_actions = 5
         
         if should_end:
             # Warn if we don't have enough actions
-            if action_count < min_actions:
-                print(f"\n!!! WARNING: Story ending with only {action_count} actions (minimum {min_actions} required) !!!\n")
+            if action_count < self.config.min_actions:
+                print(f"\n!!! WARNING: Story ending with only {action_count} actions (minimum {self.config.min_actions} required) !!!\n")
             
             # Create event log for conclusion
             events_update = []

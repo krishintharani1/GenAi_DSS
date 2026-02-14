@@ -87,6 +87,7 @@ class StoryStateManager:
     def get_context_for_character(self, character_name: str) -> str:
         """Return relevant context for a character, including their memory."""
         if character_name not in self.state.character_profiles:
+            print(f"WARNING: Character '{character_name}' not found in character profiles")
             return ""
         
         char_profile = self.state.character_profiles[character_name]

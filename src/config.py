@@ -12,6 +12,8 @@ class StoryConfig:
     
     max_turns: int = 25
     min_turns: int = 10
+    min_actions: int = 5  # Minimum number of actions required
+    
     max_tokens_per_prompt: int = 2000
     max_context_length: int = 4000
     
