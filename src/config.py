@@ -7,12 +7,12 @@ load_dotenv()
 @dataclass
 class StoryConfig:
     """Configuration for the story simulation."""
-    model_name: str = "gemma-3-27b-it"
+    model_name: str = "gemma-3-27b-it" #gemma-3-27b-it
     temperature: float = 0.7
     
     max_turns: int = 25
     min_turns: int = 10
-    min_actions: int = 5  # Minimum number of actions required
+    min_actions: int = 5
     
     max_tokens_per_prompt: int = 2000
     max_context_length: int = 4000

@@ -31,6 +31,7 @@ class CharacterMemory(BaseModel):
 class CharacterProfile(BaseModel):
     name: str
     description: str
+    secret: str = ""  # Hidden motivation only this character knows
     memory: CharacterMemory = None
     initial_inventory: List[str] = Field(default_factory=list)
     initial_goals: List[str] = Field(default_factory=list)
@@ -41,7 +42,9 @@ class CharacterProfile(BaseModel):
             self.memory = CharacterMemory(
                 character_name=self.name,
                 inventory=self.initial_inventory.copy(),
-                goals=self.initial_goals.copy()
+                goals=self.initial_goals.copy(),
+                # Seed the secret as an important fact only this character knows
+                important_facts=[f"SECRET: {self.secret}"] if self.secret else []
             )
 
 class StoryState(BaseModel):

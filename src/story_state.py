@@ -12,7 +12,9 @@ class StoryStateManager:
                 char["name"]: CharacterProfile(
                     name=char["name"],
                     description=char["description"],
-                    initial_inventory=char.get("initial_inventory", []),
+                    secret=char.get("secret", ""),
+                    # Support both old "initial_inventory" and new "inventory" field names
+                    initial_inventory=char.get("inventory", char.get("initial_inventory", [])),
                     initial_goals=char.get("initial_goals", [])
                 ) for char in characters
             },
@@ -171,4 +173,3 @@ Director Notes:
     def get_action_count(self) -> int:
         """Get total number of actions performed."""
         return len(self.state.action_history)
-
